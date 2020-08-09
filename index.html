@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>Mark Calculator</title>
+  </head>
+  <body>
+    <div class="initial-container">
+      <h1>Grade Helper</h1>
+      <h2>What would you like to do?</h2>
+      <a href="#plan" class="btn">Plan out potential grades</a>
+      <a href="#final" class="btn">Find out what you need on the final</a>
+    </div>
+
+    <!-- Plan Page -->
+    <div id="plan">
+      <h1>Mark Planner</h1>
+      <h2>Please insert marks here</h2>
+      <div class="inner-plan-container">
+        <form id="addform">
+          <div class="input-container">
+            <label for="">Assignment Name</label>
+            <input id="plan-assignment-name" type="text" required />
+          </div>
+          <div class="input-container">
+            <label for="">Mark</label>
+            <input id="plan-assignment-mark" type="number" required />
+          </div>
+          <div class="input-container">
+            <label for="">Worth</label>
+            <input id="plan-assignment-worth" type="number" required />
+          </div>
+          <input
+            id="edit-row"
+            type="button"
+            value="Edit Assignment"
+            class="invisible btn btn-primary"
+          />
+          <input type="submit" value="Add Assignment" class="btn btn-primary" />
+        </form>
+
+        <div class="plan-table">
+          <table border="1" class="table" id="table">
+            <tr>
+              <thead>
+                <th>Assignment</th>
+                <th>Mark</th>
+                <th>Worth</th>
+              </thead>
+            </tr>
+          </table>
+
+          <button
+            onclick="exportTableToExcel('table','mark-plan')"
+            id="excel-button"
+            class="btn btn-primary"
+          >
+            Download To Excel
+          </button>
+        </div>
+      </div>
+      <div id="currentMark">
+        Current Mark:
+        <p id="plan-current-mark"></p>
+      </div>
+    </div>
+    <!-- End of plan -->
+
+    <!-- Beginning of Final -->
+    <div id="final">
+      <h1>What do you need on the final</h1>
+      <h2>Please insert marks here</h2>
+      <form id="goal-mark">
+        <label>What is your current grade</label>
+        <input type="number" id="current-grade" />
+        <label>How much do you want in the course</label>
+        <input type="number" id="final-mark" />
+        <label>How much is the final worth</label>
+        <input type="number" id="final-worth" />
+        <input type="submit" value="Calculate" class="btn btn-primary" />
+      </form>
+      <div id="currentMark">
+        <p id="final-current-mark"></p>
+      </div>
+      <script
+        type="text/javascript"
+        src="https://www.gstatic.com/charts/loader.js"
+      ></script>
+      <script type="text/javascript">
+        var goalFinalMark = document.getElementById("final-mark");
+        var finalExamWorth = document.getElementById("final-worth");
+        var finalCurrentMark = document.getElementById("current-grade");
+        var finalMark = document.getElementById("final-current-mark");
+        var finalForm = document.getElementById("goal-mark");
+        finalForm.addEventListener("submit", function updateFinal() {
+          finalMark.innerText = `You need a: ${
+            (100 / finalExamWorth.value) *
+            ((finalCurrentMark.value / 100) * (100 - finalExamWorth.value) -
+              goalFinalMark.value) *
+            -1
+          }`;
+          google.charts.load("current", { packages: ["corechart"] });
+          google.charts.setOnLoadCallback(drawChart);
+
+          function drawChart() {
+            var data = google.visualization.arrayToDataTable([
+              ["Exam Mark", "Your Mark"],
+              [0, newMark(0)],
+              [5, newMark(5)],
+              [10, newMark(10)],
+              [15, newMark(15)],
+              [20, newMark(20)],
+              [25, newMark(25)],
+              [30, newMark(30)],
+              [35, newMark(35)],
+              [40, newMark(40)],
+              [45, newMark(45)],
+              [50, newMark(50)],
+              [55, newMark(55)],
+              [60, newMark(60)],
+              [65, newMark(65)],
+              [70, newMark(70)],
+              [75, newMark(75)],
+              [80, newMark(80)],
+              [85, newMark(85)],
+              [90, newMark(90)],
+              [95, newMark(95)],
+              [100, newMark(100)],
+            ]);
+
+            var options = {
+              title: "What Mark do you need",
+              hAxis: { title: "Exam Mark", minValue: 0, maxValue: 15 },
+              vAxis: { title: "Your Mark", minValue: 0, maxValue: 15 },
+              legend: "none",
+            };
+
+            var chart = new google.visualization.LineChart(
+              document.getElementById("chart_div")
+            );
+
+            chart.draw(data, options);
+          }
+        });
+        function newMark(examMark) {
+          return (
+            (100 / finalExamWorth.value) *
+            ((finalCurrentMark.value / 100) * (100 - finalExamWorth.value) -
+              examMark) *
+            -1
+          );
+        }
+      </script>
+      <div id="chart_div" style="width: 1000px; height: 600px;"></div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="plan-script.js"></script>
+  </body>
+</html>
